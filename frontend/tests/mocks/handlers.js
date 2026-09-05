@@ -29,11 +29,20 @@ export const handlers = [
     return HttpResponse.json([])
   }),
 
-  http.post('/api/contact/', () => {
+  http.post('/api/contacts/', () => {
     return HttpResponse.json({ message: 'ok' })
   }),
 
   http.post('/api/feedback/', () => {
     return HttpResponse.json({ message: 'ok' })
   }),
+
+  http.post('/api/auth/login', async ({ request }) => {
+    const body = await request.json()
+    if (body.username === 'admin' && body.password === 'admin123') {
+        return HttpResponse.json({ token: 'mock-jwt-token' })
+    }
+    return HttpResponse.json({ error: 'Invalid credentials' }, { status: 401 })
+  }),
+
 ]
