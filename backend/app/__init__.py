@@ -21,6 +21,10 @@ def create_app(testing=False):
             f"mysql+pymysql://{user}:{password}@{host}:3306/{database}"
         )
 
+    app.config["MINIO_ENDPOINT"] = os.environ.get("MINIO_ENDPOINT")
+    app.config["MINIO_ROOT_USER"] = os.environ.get("MINIO_ROOT_USER")
+    app.config["MINIO_ROOT_PASSWORD"] = os.environ.get("MINIO_ROOT_PASSWORD")
+
     app.config["JWT_SECRET"] = os.environ.get("JWT_SECRET")
     app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME")
     app.config["ADMIN_PASSWORD"] = os.environ.get("ADMIN_PASSWORD")
@@ -43,6 +47,10 @@ def create_app(testing=False):
 
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
+
+    from app.upload import bp as upload_bp
+    app.register_blueprint(upload_bp, url_prefix="/api/upload")
+
 
     @app.errorhandler(404)
     def not_found_error(error):
