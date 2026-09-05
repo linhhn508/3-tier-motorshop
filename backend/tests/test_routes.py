@@ -38,7 +38,7 @@ class TestProducts:
 
 class TestContact:
     def test_submit_contact(self, client):
-        resp = client.post("/api/contact", json={
+        resp = client.post("/api/contacts", json={
             "name": "Test User",
             "email": "test@example.com",
             "message": "Hello",
@@ -47,11 +47,11 @@ class TestContact:
         assert resp.get_json()["message"] == "Message sent"
 
     def test_submit_contact_missing_fields(self, client):
-        resp = client.post("/api/contact", json={"name": "Test"})
+        resp = client.post("/api/contacts", json={"name": "Test"})
         assert resp.status_code == 400
 
     def test_submit_contact_invalid_email(self, client):
-        resp = client.post("/api/contact", json={
+        resp = client.post("/api/contacts", json={
             "name": "Test",
             "email": "not-an-email",
             "message": "Hello",
@@ -59,7 +59,7 @@ class TestContact:
         assert resp.status_code == 400
 
     def test_submit_contact_no_body(self, client):
-        resp = client.post("/api/contact", content_type="application/json")
+        resp = client.post("/api/contacts", content_type="application/json")
         assert resp.status_code == 400
 
 
