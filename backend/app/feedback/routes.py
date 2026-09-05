@@ -3,6 +3,20 @@ from flask import jsonify, request
 from app import db
 from app.models import Feedback, Product
 from app.feedback import bp
+from app.middleware import token_required
+
+
+@bp.route("", methods=["GET"])
+@token_required
+def list_all_feedback():
+    feedbacks = Feedback.query.order_by(Feedback.created_at.desc()).all()
+    return jsonify([{
+        "id": f.id,
+        "name": f.name,
+        "rating": f.rating,
+        "comment": f.comment,
+        "product_id": f.product_id,
+    } for f in feedbacks])
 
 
 @bp.route("/<product_id>", methods=["GET"])

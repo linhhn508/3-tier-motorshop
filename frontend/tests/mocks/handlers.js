@@ -22,6 +22,13 @@ export const handlers = [
     return new HttpResponse(null, { status: 404 })
   }),
 
+  http.get('/api/feedback/', () => {
+    return HttpResponse.json([
+        { id: 1, name: 'Tran Minh Khoa', rating: 5, comment: 'Tuyet voi!', product_id: 'lop-michelin-city-grip-2' },
+        { id: 2, name: 'Nguyen Thi Lan', rating: 4, comment: 'San pham tot.', product_id: 'po-akrapovic-r1' },
+    ])
+  }),
+
   http.get('/api/feedback/:productId', ({ params }) => {
     if (params.productId === mockProductDetail.id) {
       return HttpResponse.json(mockFeedbackList)

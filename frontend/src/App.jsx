@@ -8,6 +8,7 @@ import ContactPage from './pages/ContactPage'
 import ProductInfoPage from './pages/ProductInfoPage'
 import NotFoundPage from './pages/NotFoundPage'
 import AdminLoginPage from './pages/AdminLoginPage'
+import AdminPage from './pages/AdminPage'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/product/:productId" element={<ProductInfoPage />} />
