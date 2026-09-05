@@ -14,14 +14,18 @@ function HomePage() {
   const categoryFilter = searchParams.get('category') || ''
 
   useEffect(() => {
-    fetch('/api/products/')
+    const url = searchQuery
+      ? `/api/products/search?q=${encodeURIComponent(searchQuery)}`
+      : '/api/products/'
+
+    fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
       })
       .then(setProducts)
       .catch((err) => console.error('Error loading products:', err))
-  }, [])
+  }, [searchQuery])
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -30,10 +34,6 @@ function HomePage() {
 
   const filteredProducts = useMemo(() => {
     let result = products
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter((p) => p.name.toLowerCase().includes(q))
-    }
     if (categoryFilter) {
       result = result.filter((p) => p.category === categoryFilter)
     }
