@@ -1,0 +1,90 @@
+services:
+  backend:
+    env_file: .env
+    image: custom_backend
+    build:
+      context: .
+      dockerfile: ./infra/Dockerfile/service/Dockerfile
+    container_name: backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_HOST=mariadb
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - backend_network
+
+  mariadb:
+    env_file: .env
+    image: custom_mariadb
+    build:
+      context: ./infra/Dockerfile/mariadb
+      dockerfile: Dockerfile
+    container_name: mariadb
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - backend_network
+
+  minio:
+    env_file: .env
+    image: custom_minio
+    build:
+      context: ./infra/Dockerfile/minio
+      dockerfile: Dockerfile
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./infra/Dockerfile/minio/product:/home/image
+    healthcheck:
+      test: ["CMD-SHELL", "mc alias set local http://localhost:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} && mc ls local/product-image"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - backend_network
+
+  frontend:
+    image: custom_frontend
+    build:
+      context: .
+      dockerfile: ./infra/Dockerfile/frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - "8000:80"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - backend_network
+
+networks:
+  backend_network:
+    driver: bridge
