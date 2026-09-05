@@ -36,7 +36,7 @@ export const handlers = [
     return HttpResponse.json([])
   }),
 
-  http.post('/api/contacts/', () => {
+  http.post('/api/contacts', () => {
     return HttpResponse.json({ message: 'ok' })
   }),
 
