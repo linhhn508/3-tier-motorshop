@@ -1,4 +1,5 @@
 import pytest
+import os
 
 from app import create_app, db as _db
 from app.models import Product
@@ -6,6 +7,9 @@ from app.models import Product
 
 @pytest.fixture
 def app():
+    os.environ.setdefault("JWT_SECRET", "test-secret-key")
+    os.environ.setdefault("ADMIN_USERNAME", "admin")
+    os.environ.setdefault("ADMIN_PASSWORD", "admin123")
     app = create_app(testing=True)
     with app.app_context():
         _db.create_all()
