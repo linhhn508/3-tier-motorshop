@@ -45,4 +45,26 @@ export const handlers = [
     return HttpResponse.json({ error: 'Invalid credentials' }, { status: 401 })
   }),
 
+  http.get('/api/contacts/', () => {
+    return HttpResponse.json([
+        { id: 1, name: 'Test User', email: 'test@test.com', phone: '123', subject: 'Hi', message: 'Hello' },
+    ])
+  }),
+
+  http.post('/api/products/', async () => {
+      return HttpResponse.json({ message: 'Product added', id: 'new-product' }, { status: 201 })
+  }),
+
+  http.put('/api/products/:id', async () => {
+      return HttpResponse.json({ message: 'Product updated' })
+  }),
+
+  http.delete('/api/products/:id', async () => {
+      return HttpResponse.json({ message: 'Product removed' })
+  }),
+
+  http.get('/api/upload/presign', () => {
+      return HttpResponse.json({ url: 'http://minio:9000/presigned-url' })
+  }),
+
 ]
