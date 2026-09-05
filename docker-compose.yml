@@ -14,6 +14,12 @@ services:
       - MARIADB_PASSWORD=${MARIADB_PASSWORD}
       - MARIADB_HOST=mariadb
       - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     depends_on:
       mariadb:
         condition: service_healthy
