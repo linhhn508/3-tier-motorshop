@@ -1,5 +1,5 @@
 from flask import Blueprint
 
-bp = Blueprint("contact", __name__)
+bp = Blueprint("contacts", __name__)
 
 from app.contact import routes

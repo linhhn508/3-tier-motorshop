@@ -5,11 +5,25 @@ from flask import jsonify, request
 
 from app import db
 from app.models import Contact
+from app.middleware import token_required
 from app.contact import bp
 
 logger = logging.getLogger(__name__)
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+
+@bp.route("", methods=["GET"])
+@token_required
+def list_contacts():
+    contacts = Contact.query.order_by(Contact.created_at.desc()).all()
+    return jsonify([{
+        "id": c.id,
+        "name": c.name,
+        "email": c.email,
+        "phone": c.phone,
+        "subject": c.subject,
+        "message": c.message,
+    } for c in contacts])
 
 
 @bp.route("", methods=["POST"])

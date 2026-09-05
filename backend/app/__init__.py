@@ -21,6 +21,9 @@ def create_app(testing=False):
             f"mysql+pymysql://{user}:{password}@{host}:3306/{database}"
         )
 
+    app.config["JWT_SECRET"] = os.environ.get("JWT_SECRET")
+    app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME")
+    app.config["ADMIN_PASSWORD"] = os.environ.get("ADMIN_PASSWORD")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     CORS(app)
 
@@ -30,13 +33,16 @@ def create_app(testing=False):
     app.register_blueprint(products_bp, url_prefix="/api/products")
 
     from app.contact import bp as contact_bp
-    app.register_blueprint(contact_bp, url_prefix="/api/contact")
+    app.register_blueprint(contact_bp, url_prefix="/api/contacts")
 
     from app.feedback import bp as feedback_bp
     app.register_blueprint(feedback_bp, url_prefix="/api/feedback")
 
     from app.health import bp as health_bp
     app.register_blueprint(health_bp, url_prefix="/api/health")
+
+    from app.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
     @app.errorhandler(404)
     def not_found_error(error):
