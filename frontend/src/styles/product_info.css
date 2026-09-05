@@ -1,0 +1,170 @@
+.product_info_container {
+    display: grid;
+    grid-template-areas:
+        "menu product_header"
+        "menu product_content"
+        "menu relate_product";
+    grid-template-columns: 240px 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 24px;
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.product_info_container div.menu {
+    grid-area: menu;
+    text-align: center;
+}
+
+/* PRODUCT INFO HEADER */
+
+.product_info_container div.product_info_header {
+    grid-area: product_header;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 8px;
+}
+
+.product_info_container .product_info_header h3 {
+    font-family: var(--font-heading);
+}
+
+.product_info_container .product_info_header h3 a {
+    text-decoration: none;
+    color: var(--color-accent);
+    padding-right: 10px;
+    transition: color var(--transition);
+}
+
+.product_info_container .product_info_header h3 a:hover {
+    color: var(--color-accent-hover);
+}
+
+.product_info_container .product_info_header h3 {
+    padding-bottom: 1px;
+    text-align: left;
+}
+
+/* PRODUCT INFO CONTENT */
+
+.product_info_container div.product_info_content {
+    grid-area: product_content;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: flex-start;
+    max-width: 100%;
+}
+
+.product_info_container div.overall-info-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    align-items: flex-start;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.product_info_container div.product_info_content .image-container {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.product_info_container div.product_info_content .image-container img {
+    width: 450px;
+    height: auto;
+}
+
+.product_info_container div.product_info_content .overall-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.product_info_container div.product_info_content .overall-info h3 {
+    text-align: center;
+    font-size: 30px;
+}
+
+.product_info_container div.product_info_content .overall-info .add-to-cart-btn {
+    background-color: var(--color-accent);
+    color: #ffffff;
+    border: none;
+    padding: 14px 20px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font-body);
+    transition: background-color var(--transition);
+    min-height: 44px;
+}
+
+.product_info_container div.product_info_content .overall-info .add-to-cart-btn:hover {
+    background-color: var(--color-accent-hover);
+}
+
+.product_info_container div.product_info_content .overall-info .slogan {
+    padding-left: 0px;
+}
+
+.product_info_container div.product_info_content .overall-info .slogan li {
+    display: flex;
+    align-items: left;
+    gap: 10px;
+    padding: 6px;
+}
+
+.product_info_container div.product_info_content .overall-info .slogan li img {
+    width: 24px;
+}
+
+@media (max-width: 1000px) {
+    .product_info_container div.product_info_content {
+        height: auto;
+        min-height: 240px;
+        flex-direction: column;
+        padding: 30px 20px;
+        align-items: center;
+    }
+
+    .product_info_container div.overall-info-wrapper {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .product_info_container div.product_info_content .overall-info {
+        white-space: normal;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .product_info_container {
+        grid-template-areas:
+            "product_header"
+            "product_content"
+            "relate_product";
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    .product_info_container div.menu {
+        display: none;
+    }
+
+    .product_info_container div.product_info_content .image-container img {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+/* PRODUCT INFO RELATED */
+
+.product_info_container div.product_info_related {
+    grid-area: relate_product;
+}
