@@ -39,7 +39,6 @@ function Header() {
           <NavLink to="/" end>Homepage</NavLink>
           <NavLink to="/blog">Blog</NavLink>
           <NavLink to="/contact">Contact</NavLink>
-          <NavLink to="/feedback">Feedback</NavLink>
         </nav>
       </div>
       <div id="header-banner">

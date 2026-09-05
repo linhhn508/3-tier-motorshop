@@ -5,7 +5,6 @@ import BackToTop from './components/BackToTop'
 import HomePage from './pages/HomePage'
 import BlogPage from './pages/BlogPage'
 import ContactPage from './pages/ContactPage'
-import FeedbackPage from './pages/FeedbackPage'
 import ProductInfoPage from './pages/ProductInfoPage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -18,7 +17,6 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/feedback" element={<FeedbackPage />} />
           <Route path="/product/:productId" element={<ProductInfoPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

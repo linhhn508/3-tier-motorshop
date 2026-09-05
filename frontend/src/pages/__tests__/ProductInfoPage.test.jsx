@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { http, HttpResponse } from 'msw'
 import { server } from '../../../tests/setup'
@@ -21,18 +22,10 @@ describe('ProductInfoPage', () => {
     expect(screen.getByText('Đang tải...')).toBeInTheDocument()
   })
 
-//   it('fetches and renders product details', async () => {
-//     renderProductInfoPage()
-//     expect(await screen.findByText(mockProductDetail.name)).toBeInTheDocument()
-//     expect(screen.getByText(/1\.200\.000/)).toBeInTheDocument()
-//     expect(screen.getByText(/Michelin/)).toBeInTheDocument()
-//     expect(screen.getByText(/Thai Lan/)).toBeInTheDocument()
-//     expect(screen.getByText(/Cao su tong hop/)).toBeInTheDocument()
-//   })
-
   it('renders breadcrumb with link to home', async () => {
     renderProductInfoPage()
-    await screen.findByText(mockProductDetail.name)
+    const matches = await screen.findAllByText(mockProductDetail.name)
+    expect(matches.length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: /Trang chủ/i })).toHaveAttribute('href', '/')
   })
 
@@ -57,8 +50,36 @@ describe('ProductInfoPage', () => {
 
   it('renders product image', async () => {
     renderProductInfoPage()
-    await screen.findByText(mockProductDetail.name)
+    const matches = await screen.findAllByText(mockProductDetail.name)
+    expect(matches.length).toBeGreaterThan(0)
     const img = screen.getByAltText(mockProductDetail.name)
     expect(img).toHaveAttribute('src', '/images/' + mockProductDetail.id + '/thumbnail.png')
+  })
+
+  it('shows Mô tả tab by default', async () => {
+    renderProductInfoPage()
+    await screen.findAllByText(mockProductDetail.name)
+    const descTab = screen.getByRole('button', { name: /Mô tả/ })
+    expect(descTab).toHaveClass('active')
+  })
+
+  it('switches to Đánh giá tab and shows feedback form', async () => {
+    const user = userEvent.setup()
+    renderProductInfoPage()
+    await screen.findAllByText(mockProductDetail.name)
+
+    const feedbackTab = screen.getByRole('button', { name: /Đánh giá/ })
+    await user.click(feedbackTab)
+
+    expect(feedbackTab).toHaveClass('active')
+    expect(screen.getByLabelText(/Họ và tên/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Gửi phản hồi/ })).toBeInTheDocument()
+  })
+
+  it('shows feedback list section below tabs', async () => {
+    renderProductInfoPage()
+    await screen.findAllByText(mockProductDetail.name)
+    expect(await screen.findByText('Trần Minh Khoa')).toBeInTheDocument()
+    expect(screen.getByText('Chất lượng tuyệt vời!')).toBeInTheDocument()
   })
 })

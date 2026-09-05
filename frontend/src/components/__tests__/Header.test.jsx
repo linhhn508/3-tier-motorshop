@@ -18,7 +18,6 @@ describe('Header', () => {
     expect(screen.getByRole('link', { name: /homepage/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /blog/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /contact/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /feedback/i })).toBeInTheDocument()
   })
 
   it('renders search input', () => {
