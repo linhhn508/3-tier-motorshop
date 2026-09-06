@@ -1,10 +1,13 @@
 import os
 
+from app.metrics import init_metrics
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_caching import Cache
+
 
 db = SQLAlchemy()
 
@@ -40,9 +43,10 @@ def create_app(testing=False):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     CORS(app)
 
-    
-
     cache.init_app(app)
+
+    init_metrics(app)
+
     db.init_app(app)
 
     from app.products import bp as products_bp
