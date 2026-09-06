@@ -4,9 +4,9 @@
 
 **Goal:** Add a monitoring stack (Prometheus + Grafana + Node Exporter) that auto-instruments the Flask API with request metrics and provides pre-configured dashboards for API and system monitoring.
 
-**Architecture:** `prometheus-flask-instrumentator` auto-exposes a `/metrics` endpoint on the Flask backend. Prometheus scrapes both `/metrics` (Flask) and `node-exporter:9100` (host metrics) every 15 seconds. Grafana is pre-provisioned with a Prometheus datasource and two dashboards: Flask API metrics and System metrics. All three services run on a dedicated `monitoring_network`, with Prometheus also on `backend_network` to reach the backend.
+**Architecture:** `prometheus-client` exposes a `/metrics` endpoint on the Flask backend. Prometheus scrapes `/metrics` (Flask) and `cadvisor:8080` (per-container CPU, memory, network, disk for all services). Grafana is pre-provisioned with a Prometheus datasource and two dashboards: Flask API metrics and Container metrics. The monitoring services run on a dedicated `monitoring_network`, with Prometheus also on `backend_network` to reach the backend.
 
-**Tech Stack:** prometheus-client (Python), prom/prometheus (Docker), grafana/grafana (Docker), prom/node-exporter (Docker)
+**Tech Stack:** prometheus-client (Python), prom/prometheus (Docker), grafana/grafana (Docker), gcr.io/cadvisor/cadvisor (Docker)
 
 **Spec:** `docs/superpowers/specs/2026-09-05-expanded-architecture-design.md` — Phase 3 section
 
@@ -140,7 +140,7 @@ Create the Prometheus config file that scrapes the Flask backend and Node Export
 - Create: `infra/monitoring/prometheus.yml` — scrape config
 
 **Interfaces:**
-- Consumes: `backend:5000/metrics` and `node-exporter:9100/metrics`
+- Consumes: `backend:5000/metrics` and `cadvisor:8080/metrics`
 - Produces: Prometheus config file mounted into the container
 
 - [ ] **Step 1: Create prometheus.yml**
@@ -158,9 +158,9 @@ scrape_configs:
     static_configs:
       - targets: ['backend:5000']
 
-  - job_name: 'node-exporter'
+  - job_name: 'cadvisor'
     static_configs:
-      - targets: ['node-exporter:9100']
+      - targets: ['cadvisor:8080']
 ```
 
 - [ ] **Step 2: Commit**
@@ -180,7 +180,7 @@ Create Grafana provisioning files so the Prometheus datasource and two dashboard
 - Create: `infra/monitoring/grafana/provisioning/datasources/prometheus.yml` — auto-register Prometheus
 - Create: `infra/monitoring/grafana/provisioning/dashboards/dashboard.yml` — tell Grafana where to find dashboard JSON files
 - Create: `infra/monitoring/grafana/dashboards/flask-api.json` — Flask API dashboard
-- Create: `infra/monitoring/grafana/dashboards/system.json` — System metrics dashboard
+- Create: `infra/monitoring/grafana/dashboards/containers.json` — Container metrics dashboard (CPU, memory, network per container: backend, frontend, mariadb, redis, minio)
 
 **Interfaces:**
 - Consumes: Prometheus at `http://prometheus:9090`
@@ -321,9 +321,9 @@ Create `infra/monitoring/grafana/dashboards/flask-api.json`:
 }
 ```
 
-- [ ] **Step 4: Create System dashboard**
+- [ ] **Step 4: Create Containers dashboard**
 
-Create `infra/monitoring/grafana/dashboards/system.json`:
+Create `infra/monitoring/grafana/dashboards/containers.json`:
 
 ```json
 {
@@ -334,37 +334,32 @@ Create `infra/monitoring/grafana/dashboards/system.json`:
   "links": [],
   "panels": [
     {
-      "title": "CPU Usage (%)",
+      "title": "CPU Usage per Container (%)",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "" },
       "targets": [
         {
-          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
-          "legendFormat": "CPU Usage",
+          "expr": "rate(container_cpu_usage_seconds_total{name=~\"backend|frontend|mariadb|redis|minio|reverse_proxy\"}[5m]) * 100",
+          "legendFormat": "{{name}}",
           "refId": "A"
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "percent", "min": 0, "max": 100 },
+        "defaults": { "unit": "percent" },
         "overrides": []
       }
     },
     {
-      "title": "Memory Usage",
+      "title": "Memory Usage per Container",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "" },
       "targets": [
         {
-          "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
-          "legendFormat": "Used",
+          "expr": "container_memory_usage_bytes{name=~\"backend|frontend|mariadb|redis|minio|reverse_proxy\"}",
+          "legendFormat": "{{name}}",
           "refId": "A"
-        },
-        {
-          "expr": "node_memory_MemTotal_bytes",
-          "legendFormat": "Total",
-          "refId": "B"
         }
       ],
       "fieldConfig": {
@@ -373,20 +368,15 @@ Create `infra/monitoring/grafana/dashboards/system.json`:
       }
     },
     {
-      "title": "Disk I/O",
+      "title": "Network Receive per Container",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "" },
       "targets": [
         {
-          "expr": "rate(node_disk_read_bytes_total[5m])",
-          "legendFormat": "Read {{device}}",
+          "expr": "rate(container_network_receive_bytes_total{name=~\"backend|frontend|mariadb|redis|minio|reverse_proxy\"}[5m])",
+          "legendFormat": "{{name}}",
           "refId": "A"
-        },
-        {
-          "expr": "rate(node_disk_written_bytes_total[5m])",
-          "legendFormat": "Write {{device}}",
-          "refId": "B"
         }
       ],
       "fieldConfig": {
@@ -395,20 +385,15 @@ Create `infra/monitoring/grafana/dashboards/system.json`:
       }
     },
     {
-      "title": "Network I/O",
+      "title": "Network Transmit per Container",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "datasource": { "type": "prometheus", "uid": "" },
       "targets": [
         {
-          "expr": "rate(node_network_receive_bytes_total{device!=\"lo\"}[5m])",
-          "legendFormat": "Receive {{device}}",
+          "expr": "rate(container_network_transmit_bytes_total{name=~\"backend|frontend|mariadb|redis|minio|reverse_proxy\"}[5m])",
+          "legendFormat": "{{name}}",
           "refId": "A"
-        },
-        {
-          "expr": "rate(node_network_transmit_bytes_total{device!=\"lo\"}[5m])",
-          "legendFormat": "Transmit {{device}}",
-          "refId": "B"
         }
       ],
       "fieldConfig": {
@@ -418,11 +403,11 @@ Create `infra/monitoring/grafana/dashboards/system.json`:
     }
   ],
   "schemaVersion": 39,
-  "tags": ["system", "node-exporter"],
+  "tags": ["containers", "cadvisor"],
   "templating": { "list": [] },
   "time": { "from": "now-1h", "to": "now" },
-  "title": "System",
-  "uid": "system-metrics"
+  "title": "Containers",
+  "uid": "container-metrics"
 }
 ```
 
@@ -485,9 +470,14 @@ Add after the `reverse_proxy` service block:
     networks:
       - monitoring_network
 
-  node-exporter:
-    image: prom/node-exporter
-    container_name: node-exporter
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
     restart: unless-stopped
     networks:
       - monitoring_network
@@ -562,7 +552,7 @@ docker compose up -d
 docker compose ps
 ```
 
-Expected: 9 services — reverse_proxy, frontend, backend, mariadb, minio, redis, prometheus, grafana, node-exporter.
+Expected: 9 services — reverse_proxy, frontend, backend, mariadb, minio, redis, prometheus, grafana, cadvisor.
 
 - [ ] **Step 3: Verify /metrics endpoint**
 
@@ -586,7 +576,7 @@ for t in data['data']['activeTargets']:
 "
 ```
 
-Expected: `flask-backend: up` and `node-exporter: up`.
+Expected: `flask-backend: up` and `cadvisor: up`.
 
 - [ ] **Step 5: Verify Grafana is accessible**
 
@@ -595,7 +585,7 @@ Open `http://localhost:3000` in browser. Login with `admin` / `admin`.
 Verify:
 1. Prometheus datasource appears in Settings → Data Sources
 2. "Flask API" dashboard is listed under Dashboards
-3. "System" dashboard is listed under Dashboards
+3. "Containers" dashboard is listed under Dashboards
 
 - [ ] **Step 6: Generate traffic and check dashboards**
 
