@@ -20,10 +20,13 @@ services:
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - REDIS_URL=${REDIS_URL}
     depends_on:
       mariadb:
         condition: service_healthy
       minio:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: unless-stopped
     networks:
@@ -71,6 +74,20 @@ services:
     restart: unless-stopped
     networks:
       - backend_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - backend_network
+
 
   frontend:
     image: custom_frontend
