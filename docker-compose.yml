@@ -111,7 +111,7 @@ services:
       dockerfile: ./infra/Dockerfile/reverse_proxy/Dockerfile
     container_name: reverse_proxy
     ports:
-      - "80:80"
+      - "8000:80"
     depends_on:
       frontend:
         condition: service_started
