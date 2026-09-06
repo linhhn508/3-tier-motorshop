@@ -6,6 +6,10 @@ from app.middleware import token_required
 from app.products import bp
 
 
+def _invalidate_product_cache():
+    cache.delete("products:list")
+    cache.delete("products:categories")
+
 @bp.route("/", methods=["GET"])
 @cache.cached(key_prefix="products:list")
 def index():
@@ -14,15 +18,12 @@ def index():
 
 
 @bp.route("/<product_id>/info", methods=["GET"])
-@cache.cached(key_prefix="products:detail:%s")
 def get_product(product_id):
     cache_key = f"products:detail:{product_id}"
     cached = cache.get(cache_key)
-    
     if cached:
         return jsonify(cached)
     product = db.session.get(Product, product_id)
-    
     if product:
         data = product.to_detail_dict()
         cache.set(cache_key, data)
@@ -70,8 +71,11 @@ def add():
         made_in=data.get("made_in"), material=data.get("material"),
         color=data.get("color"), detail=data.get("detail"),
     )
-    db.session.add(product)
-    db.session.commit()
+
+    db.session.add(product)                     # 1. Stage the new product in SQLAlchemy's session (not yet in DB)
+    db.session.commit()                         # 2. Write to MariaDB (INSERT INTO products ...)
+    _invalidate_product_cache()                 # 3. Delete "products:list" and "products:categories" from Redis
+
     return jsonify({"message": "Product added", "id": data["id"]}), 201
 
 
@@ -86,6 +90,8 @@ def update(product_id):
         if field in data:
             setattr(product, field, data[field])
     db.session.commit()
+    _invalidate_product_cache()
+    cache.delete(f"products:detail:{product_id}")
     return jsonify({"message": "Product updated"})
 
 
@@ -97,28 +103,6 @@ def delete(product_id):
         return jsonify({"error": "Product not found"}), 404
     db.session.delete(product)
     db.session.commit()
-    return jsonify({"message": "Product removed"})
-
-
-
-def _invalidate_product_cache():
-    cache.delete("products:list")
-    cache.delete("products:categories")
-    # Delete all detail keys by pattern — flask-caching doesn't support wildcard,
-    # so delete the specific detail key when we know the product_id
-    # For list/categories, clearing those two is sufficient since detail keys
-    # expire naturally after TTL
-
-# In add(), after db.session.commit():
-    _invalidate_product_cache()
-    return jsonify({"message": "Product added", "id": data["id"]}), 201
-
-# In update(), after db.session.commit():
-    _invalidate_product_cache()
-    cache.delete(f"products:detail:{product_id}")
-    return jsonify({"message": "Product updated"})
-
-# In delete(), after db.session.commit():
     _invalidate_product_cache()
     cache.delete(f"products:detail:{product_id}")
     return jsonify({"message": "Product removed"})
