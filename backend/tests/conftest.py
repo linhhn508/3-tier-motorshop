@@ -10,6 +10,11 @@ def app():
     os.environ.setdefault("JWT_SECRET", "test-secret-key")
     os.environ.setdefault("ADMIN_USERNAME", "admin")
     os.environ.setdefault("ADMIN_PASSWORD", "admin123")
+    os.environ.setdefault("JWT_SECRET", "test-secret-key")
+    os.environ.setdefault("ADMIN_USERNAME", "admin")
+    os.environ.setdefault("ADMIN_PASSWORD", "admin123")
+    os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
+
     app = create_app(testing=True)
     with app.app_context():
         _db.create_all()

@@ -4,14 +4,18 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
+from flask_caching import Cache
+
 db = SQLAlchemy()
 
+cache = Cache()
 
 def create_app(testing=False):
     app = Flask(__name__)
 
     if testing:
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+        app.config["CACHE_TYPE"] = "SimpleCache"
     else:
         user = os.environ.get("MARIADB_USER")
         password = os.environ.get("MARIADB_PASSWORD")
@@ -31,6 +35,12 @@ def create_app(testing=False):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     CORS(app)
 
+    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    app.config["CACHE_TYPE"] = "RedisCache"
+    app.config["CACHE_REDIS_URL"] = redis_url
+    app.config["CACHE_DEFAULT_TIMEOUT"] = 300
+
+    cache.init_app(app)
     db.init_app(app)
 
     from app.products import bp as products_bp

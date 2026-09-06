@@ -1,26 +1,37 @@
 from flask import jsonify, request
 
-from app import db
+from app import db, cache
 from app.models import Product
 from app.middleware import token_required
 from app.products import bp
 
 
 @bp.route("/", methods=["GET"])
+@cache.cached(key_prefix="products:list")
 def index():
     products = Product.query.all()
     return jsonify([p.to_list_dict() for p in products])
 
 
 @bp.route("/<product_id>/info", methods=["GET"])
+@cache.cached(key_prefix="products:detail:%s")
 def get_product(product_id):
+    cache_key = f"products:detail:{product_id}"
+    cached = cache.get(cache_key)
+    
+    if cached:
+        return jsonify(cached)
     product = db.session.get(Product, product_id)
+    
     if product:
-        return jsonify(product.to_detail_dict())
+        data = product.to_detail_dict()
+        cache.set(cache_key, data)
+        return jsonify(data)
     return jsonify({"error": "Product not found"}), 404
 
 
 @bp.route("/categories/", methods=["GET"])
+@cache.cached(key_prefix="products:categories")
 def categories():
     rows = db.session.query(Product.category).distinct().all()
     return jsonify([r[0] for r in rows])
@@ -86,4 +97,28 @@ def delete(product_id):
         return jsonify({"error": "Product not found"}), 404
     db.session.delete(product)
     db.session.commit()
+    return jsonify({"message": "Product removed"})
+
+
+
+def _invalidate_product_cache():
+    cache.delete("products:list")
+    cache.delete("products:categories")
+    # Delete all detail keys by pattern — flask-caching doesn't support wildcard,
+    # so delete the specific detail key when we know the product_id
+    # For list/categories, clearing those two is sufficient since detail keys
+    # expire naturally after TTL
+
+# In add(), after db.session.commit():
+    _invalidate_product_cache()
+    return jsonify({"message": "Product added", "id": data["id"]}), 201
+
+# In update(), after db.session.commit():
+    _invalidate_product_cache()
+    cache.delete(f"products:detail:{product_id}")
+    return jsonify({"message": "Product updated"})
+
+# In delete(), after db.session.commit():
+    _invalidate_product_cache()
+    cache.delete(f"products:detail:{product_id}")
     return jsonify({"message": "Product removed"})
