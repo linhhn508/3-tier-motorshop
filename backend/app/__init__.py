@@ -25,6 +25,11 @@ def create_app(testing=False):
             f"mysql+pymysql://{user}:{password}@{host}:3306/{database}"
         )
 
+        redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+        app.config["CACHE_TYPE"] = "RedisCache"
+        app.config["CACHE_REDIS_URL"] = redis_url
+        app.config["CACHE_DEFAULT_TIMEOUT"] = 300
+
     app.config["MINIO_ENDPOINT"] = os.environ.get("MINIO_ENDPOINT")
     app.config["MINIO_ROOT_USER"] = os.environ.get("MINIO_ROOT_USER")
     app.config["MINIO_ROOT_PASSWORD"] = os.environ.get("MINIO_ROOT_PASSWORD")
@@ -35,10 +40,7 @@ def create_app(testing=False):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     CORS(app)
 
-    redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-    app.config["CACHE_TYPE"] = "RedisCache"
-    app.config["CACHE_REDIS_URL"] = redis_url
-    app.config["CACHE_DEFAULT_TIMEOUT"] = 300
+    
 
     cache.init_app(app)
     db.init_app(app)
