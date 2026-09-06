@@ -6,8 +6,6 @@ services:
       context: .
       dockerfile: ./infra/Dockerfile/service/Dockerfile
     container_name: backend
-    ports:
-      - "5000:5000"
     environment:
       - FLASK_APP=app
       - MARIADB_USER=${MARIADB_USER}
@@ -88,20 +86,35 @@ services:
     networks:
       - backend_network
 
-
   frontend:
     image: custom_frontend
     build:
       context: .
       dockerfile: ./infra/Dockerfile/frontend/Dockerfile
     container_name: frontend
-    ports:
-      - "8000:80"
     depends_on:
       mariadb:
         condition: service_healthy
       minio:
         condition: service_healthy
+      backend:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - backend_network
+
+
+  reverse_proxy:
+    image: custom_reverse_proxy
+    build:
+      context: .
+      dockerfile: ./infra/Dockerfile/reverse_proxy/Dockerfile
+    container_name: reverse_proxy
+    ports:
+      - "80:80"
+    depends_on:
+      frontend:
+        condition: service_started
       backend:
         condition: service_started
     restart: unless-stopped
