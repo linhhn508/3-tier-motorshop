@@ -13,7 +13,7 @@
       "targets": [
         {
           "expr": "rate(http_request_duration_seconds_count{job=\"flask-backend\"}[1m])",
-          "legendFormat": "{{method}} {{handler}} {{status}}",
+          "legendFormat": "{{method}} {{endpoint}} {{status}}",
           "refId": "A"
         }
       ],
@@ -56,8 +56,8 @@
       "datasource": { "type": "prometheus", "uid": "" },
       "targets": [
         {
-          "expr": "rate(http_request_duration_seconds_count{job=\"flask-backend\",status=~\"5..\"}[1m])",
-          "legendFormat": "{{handler}} 5xx",
+          "expr": "rate(http_requests_total{job=\"flask-backend\",status=~\"5..\"}[1m])",
+          "legendFormat": "{{endpoint}} 5xx",
           "refId": "A"
         }
       ],
@@ -73,8 +73,8 @@
       "datasource": { "type": "prometheus", "uid": "" },
       "targets": [
         {
-          "expr": "topk(10, sum by (handler) (increase(http_request_duration_seconds_count{job=\"flask-backend\"}[1h])))",
-          "legendFormat": "{{handler}}",
+          "expr": "topk(10, sum by (endpoint) (increase(http_request_duration_seconds_count{job=\"flask-backend\"}[1h])))",
+          "legendFormat": "{{endpoint}}",
           "refId": "A"
         }
       ],
