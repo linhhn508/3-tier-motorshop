@@ -14,10 +14,13 @@ on:
 
 jobs:
   check-version:
+    name: Check Version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history for all tags and branches
 
       - name: Check version format
         run: |
@@ -25,6 +28,23 @@ jobs:
             echo "Error: Version must be in the format X.Y.Z"
             exit 1
           fi
+
+          NEW_VERSION="${{ github.event.inputs.version }}"
+          LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null)
+
+          echo "Latest Git Tag: $LATEST_TAG"
+          echo "New Version:    $NEW_VERSION"
+
+          if [ "$LATEST_TAG" == "$NEW_VERSION" ]; then
+              echo "Error: The new version is already live."
+              exit 1
+          elif [ "$(printf '%s\n' "$LATEST_TAG" "$NEW_VERSION" | sort -V | tail -n1)" == "$NEW_VERSION" ]; then
+              echo "$NEW_VERSION is newer than $LATEST_TAG."
+          else
+              echo "Error: $NEW_VERSION is older than $LATEST_TAG."
+              exit 1
+          fi
+
 
   call-frontend-workflow:
     name: Build Frontend
