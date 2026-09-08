@@ -4,9 +4,9 @@ import re
 from flask import jsonify, request
 
 from app import db
-from app.models import Contact
-from app.middleware import token_required
 from app.contact import bp
+from app.middleware import token_required
+from app.models import Contact
 
 logger = logging.getLogger(__name__)
 

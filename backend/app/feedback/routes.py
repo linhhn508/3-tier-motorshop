@@ -1,9 +1,9 @@
 from flask import jsonify, request
 
 from app import db
-from app.models import Feedback, Product
 from app.feedback import bp
 from app.middleware import token_required
+from app.models import Feedback, Product
 
 
 @bp.route("", methods=["GET"])

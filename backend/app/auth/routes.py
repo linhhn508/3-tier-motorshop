@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta, timezone
-from flask import jsonify, request, current_app
+
 import jwt
+from flask import current_app, jsonify, request
+
 from app.auth import bp
 
 

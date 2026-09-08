@@ -1,6 +1,7 @@
 import time
-from flask import request, g
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+
+from flask import g, request
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 REQUEST_COUNT = Counter(
     "http_requests_total",

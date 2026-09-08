@@ -1,8 +1,8 @@
 from flask import jsonify, request
 
-from app import db, cache
-from app.models import Product
+from app import cache, db
 from app.middleware import token_required
+from app.models import Product
 from app.products import bp
 
 
