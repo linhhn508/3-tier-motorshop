@@ -53,12 +53,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download frontend artifacts
-        cmd: echo "Downloading frontend artifacts..."
+        run: echo "Downloading frontend artifacts..."
       - name: Download backend artifacts
-        cmd: echo "Downloading backend artifacts..."
+        run: echo "Downloading backend artifacts..."
       - name: Create docker images
-        cmd: echo "Creating docker images..."
+        run: echo "Creating docker images..."
       - name: Push docker images
-        cmd: echo "Pushing docker images..."
+        run: echo "Pushing docker images..."
       - name: Create Github release
-        cmd: echo "Creating GitHub release..."
+        run: echo "Creating GitHub release..."
