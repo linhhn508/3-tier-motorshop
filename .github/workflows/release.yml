@@ -6,8 +6,8 @@ on:
       version:
         description: 'Version to release'
         required: true
-      dry-run:
-        description: 'Run the release process without making any changes'
+      release:
+        description: 'Release the version (true/false)'
         required: true
         type: boolean
         default: false
@@ -71,7 +71,7 @@ jobs:
           python-version: 3.12
 
       - name: Docker Compose Up
-        run: docker compose -f workflow-docker-compose.yml up --build -d
+        run: docker compose -f workflow-docker-compose.yml up --build -d --wait
 
       - name: Run Integration Tests
         working-directory: e2e
@@ -81,18 +81,122 @@ jobs:
           uv run playwright install-deps chromium
           uv run pytest
 
-  release:
-    name: Release
+  build-docker-image:
+    name: Build (${{ matrix.image_name }})
     needs: integration-tests
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true 
+      matrix:
+        include:
+          - image_name: motorshop_frontend
+            context_dir: .
+            dockerfile_path: ./infra/Dockerfile/frontend/Dockerfile
+          - image_name: motorshop_backend
+            context_dir: .
+            dockerfile_path: ./infra/Dockerfile/service/Dockerfile
+
     steps:
-      - name: Download frontend artifacts
-        run: echo "Downloading frontend artifacts..."
-      - name: Download backend artifacts
-        run: echo "Downloading backend artifacts..."
-      - name: Create docker images
-        run: echo "Creating docker images..."
-      - name: Push docker images
-        run: echo "Pushing docker images..."
-      - name: Create Github release
-        run: echo "Creating GitHub release..."
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and export to local tarball
+        uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.context_dir }}
+          file: ${{ matrix.dockerfile_path }}
+          outputs: type=docker,dest=/tmp/${{ matrix.image_name }}.tar
+          tags: ${{ matrix.image_name }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ matrix.image_name }}-artifact
+          path: /tmp/${{ matrix.image_name }}.tar
+          retention-days: 1
+
+  push-docker-images:
+    name: Push Docker Images to GHCR
+    needs: build-docker-image
+    if: ${{ github.event.inputs.release == 'true' }}
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        image_name: [motorshop_frontend, motorshop_backend]
+
+    env:
+      REGISTRY: ghcr.io
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ matrix.image_name }}-artifact
+          path: /tmp
+      
+      - name: Load Docker image
+        run: |
+          docker load --input /tmp/${{ matrix.image_name }}.tar
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+  
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image_name }}
+          tags: |
+            type=raw,value=${{ github.event.inputs.version }},enable=${{ github.event.inputs.version != '' }}
+            type=sha,format=short
+            type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' }}
+
+      - name: Tag and Push Image to GHCR
+        run: |
+
+          TAGS="${{ steps.meta.outputs.tags }}"
+
+          for TAG in $TAGS; do
+            echo "Tagging ${{ matrix.image_name }}:latest as $TAG"
+            docker tag ${{ matrix.image_name }}:latest $TAG
+            docker push $TAG
+          done
+
+
+  publish-tag:
+    name: Publish Release
+    needs: push-docker-images
+    if: ${{ github.event.inputs.release == 'true' }}
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.event.inputs.version }} \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "${{ github.event.inputs.version }}" \
+            --generate-notes
