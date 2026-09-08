@@ -239,7 +239,11 @@ function ProductInfoPage() {
 
         {activeTab === 'description' ? (
           <div className="detailed_info_wrapper">
-            <div dangerouslySetInnerHTML={{ __html: product.product?.detail }} />
+            {product.product?.detail ? (
+              <div dangerouslySetInnerHTML={{ __html: product.product.detail }} />
+            ) : (
+              <p>Chưa có mô tả cho sản phẩm này.</p>
+            )}
           </div>
         ) : (
           <FeedbackForm productId={product.id} onSubmitted={fetchReviews} />

@@ -18,7 +18,7 @@ def test_admin_products_tab_visible(admin_page: Page):
 
 def test_admin_create_product(admin_page: Page):
     admin_page.locator(".admin-btn-primary", has_text="Thêm sản phẩm").click()
-    expect(admin_page.locator("h4", has_text="Thêm sản phẩm mới")).to_be_visible()
+    expect(admin_page.locator("h3", has_text="Thêm sản phẩm mới")).to_be_visible()
 
     admin_page.fill("#prod-id", TEST_PRODUCT_ID)
     admin_page.fill("#prod-name", "E2E Test Product")
@@ -52,7 +52,7 @@ def test_admin_edit_product(admin_page: Page):
     # Click edit on the new product row
     row = admin_page.locator("tr", has_text=product_id)
     row.locator(".admin-btn-edit").click()
-    expect(admin_page.locator("h4", has_text="Sửa sản phẩm")).to_be_visible()
+    expect(admin_page.locator("h3", has_text="Sửa sản phẩm")).to_be_visible()
 
     admin_page.fill("#prod-name", "After Edit")
     admin_page.locator(".admin-btn-primary", has_text="Cập nhật").click()
