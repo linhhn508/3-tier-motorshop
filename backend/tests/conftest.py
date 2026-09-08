@@ -1,7 +1,9 @@
-import pytest
 import os
 
-from app import create_app, db as _db
+import pytest
+
+from app import create_app
+from app import db as _db
 from app.models import Product
 
 

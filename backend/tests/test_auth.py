@@ -1,5 +1,6 @@
 import jwt
 
+
 class TestAuth:
     def test_login_success(self, client):
         resp = client.post("/api/auth/login", json={

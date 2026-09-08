@@ -29,7 +29,9 @@ class TestCaching:
         client.get("/api/products/")
         assert cache.get("products:list") is not None
 
-        import jwt, os
+        import os
+
+        import jwt
         token = jwt.encode({"sub": "admin"}, os.environ["JWT_SECRET"], algorithm="HS256")
         client.post("/api/products/", json={
             "id": "new-prod", "name": "New", "price": 100, "category": "Test"
@@ -42,7 +44,9 @@ class TestCaching:
         client.get("/api/products/po-akrapovic-r1/info")
         assert cache.get("products:list") is not None
 
-        import jwt, os
+        import os
+
+        import jwt
         token = jwt.encode({"sub": "admin"}, os.environ["JWT_SECRET"], algorithm="HS256")
         client.delete("/api/products/po-akrapovic-r1",
                        headers={"Authorization": f"Bearer {token}"})

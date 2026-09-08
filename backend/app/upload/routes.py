@@ -1,5 +1,6 @@
 import boto3
 from flask import current_app, jsonify, request
+
 from app.middleware import token_required
 from app.upload import bp
 
