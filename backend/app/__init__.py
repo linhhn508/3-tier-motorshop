@@ -39,7 +39,8 @@ def create_app(testing=False):
     app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME")
     app.config["ADMIN_PASSWORD"] = os.environ.get("ADMIN_PASSWORD")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    CORS(app)
+    
+    # CORS(app)
 
     cache.init_app(app)
 
