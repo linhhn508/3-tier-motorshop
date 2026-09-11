@@ -58,9 +58,3 @@ def setup_logging(app, log_level="INFO", log_to_file=False, log_dir='./logs'):
             f"Status: {response.status_code} | Time: {duration:.2f}ms"
         )
         return response
-
-    # 6. Đăng ký bộ bắt lỗi toàn cục (Global Exception Handler)
-    @app.errorhandler(Exception)
-    def handle_exception(e):
-        app.logger.error(f"Server Error (500 Internal Error): {str(e)}", exc_info=True)
-        return jsonify(error="Internal Server Error"), 500

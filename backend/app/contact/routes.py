@@ -3,10 +3,9 @@ import re
 from flask import jsonify, request
 
 from app import db
-from app.contact import bp
+from app.contact import bp, logger
 from app.middleware import token_required
 from app.models import Contact
-from app.products import logger
 
 EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 

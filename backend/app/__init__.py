@@ -81,4 +81,9 @@ def create_app(testing=False, log_level='INFO'):
             return jsonify({"error": "Not found"}), 404
         return "<h1>404 Not Found</h1>", 404
 
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        app.logger.error(f"Server Error (500 Internal Error): {str(e)}", exc_info=True)
+        return jsonify(error="Internal Server Error"), 500
+
     return app
