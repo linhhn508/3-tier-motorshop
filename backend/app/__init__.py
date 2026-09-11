@@ -2,11 +2,10 @@ import os
 
 from flask import Flask, jsonify, request
 from flask_caching import Cache
-from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-from app.metrics import init_metrics
 from app.config_log import setup_logging
+from app.metrics import init_metrics
 
 db = SQLAlchemy()
 
@@ -45,7 +44,7 @@ def create_app(testing=False, log_level='INFO'):
     app.config["ADMIN_USERNAME"] = os.environ.get("ADMIN_USERNAME")
     app.config["ADMIN_PASSWORD"] = os.environ.get("ADMIN_PASSWORD")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    
+
     # CORS(app)
 
     app.logger.info("Init cache and database...")
@@ -54,7 +53,7 @@ def create_app(testing=False, log_level='INFO'):
     init_metrics(app)
 
     db.init_app(app)
-    
+
     app.logger.info("Database initialized.")
 
     from app.products import bp as products_bp

@@ -2,8 +2,8 @@ import boto3
 from flask import current_app, jsonify, request
 
 from app.middleware import token_required
-from app.upload import bp
-from app.upload import logger
+from app.upload import bp, logger
+
 
 def get_s3_client():
     return boto3.client(

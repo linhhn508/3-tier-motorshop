@@ -3,8 +3,8 @@ from flask import jsonify, request
 from app import cache, db
 from app.middleware import token_required
 from app.models import Product
-from app.products import bp
-from app.products import logger
+from app.products import bp, logger
+
 
 def _invalidate_product_cache():
     cache.delete("products:list")
