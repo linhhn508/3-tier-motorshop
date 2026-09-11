@@ -85,25 +85,14 @@ function FeedbackForm({ productId, onSubmitted }) {
           <label htmlFor='fb-name'>
             Họ và tên <span className='required'>*</span>
           </label>
-          <input
-            type='text'
-            id='fb-name'
-            name='name'
-            placeholder='Nguyễn Văn A'
-            required
-            value={formData.name}
-            onChange={handleChange}
-          />
+          <input type='text' id='fb-name' name='name' placeholder='Nguyễn Văn A' required value={formData.name} onChange={handleChange} />
         </div>
 
         <div className='form-group'>
           <label>
             Mức độ hài lòng <span className='required'>*</span>
           </label>
-          <StarRating
-            value={formData.rating}
-            onChange={(val) => setFormData({ ...formData, rating: val })}
-          />
+          <StarRating value={formData.rating} onChange={(val) => setFormData({ ...formData, rating: val })} />
           <span className='rating-label'>{ratingLabels[formData.rating] || 'Chưa đánh giá'}</span>
         </div>
 
@@ -255,8 +244,7 @@ function ProductInfoPage() {
             </div>
             <ol className='slogan'>
               <li>
-                <img src='/assets/payment.png' alt='Thanh toán đa dạng' /> PHƯƠNG THỨC THANH TOÁN ĐA
-                DẠNG
+                <img src='/assets/payment.png' alt='Thanh toán đa dạng' /> PHƯƠNG THỨC THANH TOÁN ĐA DẠNG
               </li>
               <li>
                 <img src='/assets/delivery.png' alt='Ship COD' /> SHIP COD TOÀN QUỐC. PHÍ TÙY TỈNH
@@ -272,16 +260,10 @@ function ProductInfoPage() {
         </div>
 
         <div className='product-tabs'>
-          <button
-            className={`tab-btn ${activeTab === 'description' ? 'active' : ''}`}
-            onClick={() => setActiveTab('description')}
-          >
+          <button className={`tab-btn ${activeTab === 'description' ? 'active' : ''}`} onClick={() => setActiveTab('description')}>
             Mô tả
           </button>
-          <button
-            className={`tab-btn ${activeTab === 'feedback' ? 'active' : ''}`}
-            onClick={() => setActiveTab('feedback')}
-          >
+          <button className={`tab-btn ${activeTab === 'feedback' ? 'active' : ''}`} onClick={() => setActiveTab('feedback')}>
             Đánh giá
           </button>
         </div>

@@ -96,9 +96,7 @@ export const handlers = [
   http.get('/api/products/search', ({ request }) => {
     const url = new URL(request.url);
     const q = url.searchParams.get('q')?.toLowerCase() || '';
-    const filtered = mockProducts.filter(
-      (p) => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
-    );
+    const filtered = mockProducts.filter((p) => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
     return HttpResponse.json(filtered);
   }),
 ];
