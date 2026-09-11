@@ -6,18 +6,24 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from app.metrics import init_metrics
+from app.config_log import setup_logging
 
 db = SQLAlchemy()
 
 cache = Cache()
 
-def create_app(testing=False):
+def create_app(testing=False, log_level='INFO'):
     app = Flask(__name__)
+    setup_logging(app, log_level)
 
     if testing:
+        app.logger.info("Running in testing mode: using in-memory SQLite database and simple cache.")
+
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
         app.config["CACHE_TYPE"] = "SimpleCache"
     else:
+        app.logger.info("Running in production mode: using MariaDB and Redis.")
+
         user = os.environ.get("MARIADB_USER")
         password = os.environ.get("MARIADB_PASSWORD")
         host = os.environ.get("MARIADB_HOST", "mariadb")
@@ -42,11 +48,14 @@ def create_app(testing=False):
     
     # CORS(app)
 
+    app.logger.info("Init cache and database...")
     cache.init_app(app)
 
     init_metrics(app)
 
     db.init_app(app)
+    
+    app.logger.info("Database initialized.")
 
     from app.products import bp as products_bp
     app.register_blueprint(products_bp, url_prefix="/api/products")
