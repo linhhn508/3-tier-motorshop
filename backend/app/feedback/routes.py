@@ -43,7 +43,7 @@ def get_feedback(product_id):
 @bp.route("", methods=["POST"])
 def submit_feedback():
     logger.debug("Feedback submission received.")
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         logger.error("No JSON data provided in the request body.")
         return jsonify({"error": "Request body is required"}), 400

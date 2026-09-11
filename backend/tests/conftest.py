@@ -1,4 +1,5 @@
 import os
+import secrets
 
 import pytest
 
@@ -9,10 +10,7 @@ from app.models import Product
 
 @pytest.fixture
 def app():
-    os.environ.setdefault("JWT_SECRET", "test-secret-key")
-    os.environ.setdefault("ADMIN_USERNAME", "admin")
-    os.environ.setdefault("ADMIN_PASSWORD", "admin123")
-    os.environ.setdefault("JWT_SECRET", "test-secret-key")
+    os.environ.setdefault("JWT_SECRET", secrets.token_hex(32))
     os.environ.setdefault("ADMIN_USERNAME", "admin")
     os.environ.setdefault("ADMIN_PASSWORD", "admin123")
     os.environ.setdefault("REDIS_URL", "redis://localhost:6379/0")
