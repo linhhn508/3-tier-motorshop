@@ -1,14 +1,15 @@
-import os
 import logging
-import time
+import os
 import socket
+import time
 
-from flask import request, jsonify
+from flask import jsonify, request
+
 
 def setup_logging(app, log_level="INFO", log_to_file=False, log_dir='./logs'):
     # 1. Lấy cấu hình từ biến môi trường
     app.logger.setLevel(getattr(logging, log_level))
-    
+
     # Xóa các handler mặc định của Flask để tránh bị lặp log
     app.logger.handlers.clear()
 
@@ -30,7 +31,7 @@ def setup_logging(app, log_level="INFO", log_to_file=False, log_dir='./logs'):
 
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
-            
+
         file_handler = RotatingFileHandler(
             os.path.join(log_dir, 'flask.log'),
             maxBytes=5*1024*1024,  # 5MB mỗi file
@@ -49,7 +50,7 @@ def setup_logging(app, log_level="INFO", log_to_file=False, log_dir='./logs'):
         # Bỏ qua log request nếu là route kiểm tra sức khỏe hệ thống (Health check của AWS)
         if request.path == '/health' or request.path == '/metrics':
             return response
-            
+
         duration = (time.time() - request.start_time) * 1000
         app.logger.info(
             f"IP: {request.remote_addr} | "

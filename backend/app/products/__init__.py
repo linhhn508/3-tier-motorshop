@@ -1,5 +1,6 @@
-from flask import Blueprint
 import logging
+
+from flask import Blueprint
 
 bp = Blueprint("products", __name__)
 logger = logging.getLogger(f"app.{bp.name}")
