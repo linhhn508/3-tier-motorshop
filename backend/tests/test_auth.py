@@ -1,3 +1,5 @@
+import os
+
 import jwt
 
 
@@ -10,7 +12,7 @@ class TestAuth:
         assert resp.status_code == 200
         data = resp.get_json()
         assert "token" in data
-        decoded = jwt.decode(data["token"], "test-secret-key", algorithms=["HS256"])
+        decoded = jwt.decode(data["token"], os.environ["JWT_SECRET"], algorithms=["HS256"])
         assert decoded["sub"] == "admin"
 
     def test_login_wrong_password(self, client):

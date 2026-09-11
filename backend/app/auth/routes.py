@@ -10,7 +10,7 @@ from app.products import logger
 @bp.route("/login", methods=["POST"])
 def login():
     logger.debug("Login attempt received.")
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         logger.error("No JSON data provided in the request body.")
         return jsonify({"error": "Request body is required"}), 400

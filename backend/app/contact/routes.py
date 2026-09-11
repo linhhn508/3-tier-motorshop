@@ -28,7 +28,7 @@ def list_contacts():
 @bp.route("", methods=["POST"])
 def submit_contact():
     logger.debug("Contact submission received.")
-    data = request.get_json()
+    data = request.get_json(silent=True)
     if not data:
         logger.error("No JSON data provided in the request body.")
         return jsonify({"error": "Request body is required"}), 400
