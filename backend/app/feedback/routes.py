@@ -5,6 +5,7 @@ from app.feedback import bp, logger
 from app.middleware import token_required
 from app.models import Feedback, Product
 
+
 @bp.route("", methods=["GET"])
 @token_required
 def list_all_feedback():

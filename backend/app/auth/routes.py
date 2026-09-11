@@ -5,6 +5,7 @@ from flask import current_app, jsonify, request
 
 from app.auth import bp, logger
 
+
 @bp.route("/login", methods=["POST"])
 def login():
     logger.debug("Login attempt received.")

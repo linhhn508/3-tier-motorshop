@@ -3,7 +3,7 @@ import os
 import socket
 import time
 
-from flask import jsonify, request
+from flask import request
 
 
 def setup_logging(app, log_level="INFO", log_to_file=False, log_dir='./logs'):
