@@ -1,27 +1,29 @@
-import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 
 function CategoryMenu() {
-  const [categories, setCategories] = useState([])
-  const [searchParams] = useSearchParams()
-  const activeCategory = searchParams.get('category') || ''
+  const [categories, setCategories] = useState([]);
+  const [searchParams] = useSearchParams();
+  const activeCategory = searchParams.get('category') || '';
 
   useEffect(() => {
     fetch('/api/products/categories/')
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json()
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
       })
       .then(setCategories)
-      .catch((err) => console.error('Error loading categories:', err))
-  }, [])
+      .catch((err) => console.error('Error loading categories:', err));
+  }, []);
 
   return (
-    <div id="menu" className="menu">
+    <div id='menu' className='menu'>
       <ul>
-        <li className="menu-title">Danh mục sản phẩm</li>
+        <li className='menu-title'>Danh mục sản phẩm</li>
         <li>
-          <Link to="/" className={!activeCategory ? 'active' : ''}>Tất cả</Link>
+          <Link to='/' className={!activeCategory ? 'active' : ''}>
+            Tất cả
+          </Link>
         </li>
         {categories.map((cat) => (
           <li key={cat}>
@@ -35,7 +37,7 @@ function CategoryMenu() {
         ))}
       </ul>
     </div>
-  )
+  );
 }
 
-export default CategoryMenu
+export default CategoryMenu;
