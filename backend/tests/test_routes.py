@@ -3,6 +3,7 @@ class TestHealth:
         resp = client.get("/api/health")
         assert resp.status_code == 200
         assert resp.get_json()["status"] == "healthy"
+        assert resp.get_json()["hostname"] is not None
 
 
 class TestProducts:
