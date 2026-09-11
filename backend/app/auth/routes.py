@@ -3,8 +3,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from flask import current_app, jsonify, request
 
-from app.auth import bp
-from app.products import logger
+from app.auth import bp, logger
 
 
 @bp.route("/login", methods=["POST"])
