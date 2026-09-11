@@ -27,7 +27,10 @@ function CategoryMenu() {
         </li>
         {categories.map((cat) => (
           <li key={cat}>
-            <Link to={`/?category=${encodeURIComponent(cat)}`} className={activeCategory === cat ? 'active' : ''}>
+            <Link
+              to={`/?category=${encodeURIComponent(cat)}`}
+              className={activeCategory === cat ? 'active' : ''}
+            >
               {cat}
             </Link>
           </li>

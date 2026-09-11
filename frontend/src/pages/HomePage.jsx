@@ -14,7 +14,9 @@ function HomePage() {
   const categoryFilter = searchParams.get('category') || '';
 
   useEffect(() => {
-    const url = searchQuery ? `/api/products/search?q=${encodeURIComponent(searchQuery)}` : '/api/products/';
+    const url = searchQuery
+      ? `/api/products/search?q=${encodeURIComponent(searchQuery)}`
+      : '/api/products/';
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
@@ -45,26 +47,40 @@ function HomePage() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedProducts = filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  const heading = searchQuery ? `Kết quả tìm kiếm: "${searchQuery}"` : categoryFilter ? categoryFilter : 'SẢN PHẨM MỚI NHẤT';
+  const heading = searchQuery
+    ? `Kết quả tìm kiếm: "${searchQuery}"`
+    : categoryFilter
+      ? categoryFilter
+      : 'SẢN PHẨM MỚI NHẤT';
 
   return (
     <div className='container'>
       <CategoryMenu />
       <div className='content'>
         <h3>{heading}</h3>
-        {filteredProducts.length === 0 && (searchQuery || categoryFilter) && <p className='no-results'>Không tìm thấy sản phẩm phù hợp.</p>}
+        {filteredProducts.length === 0 && (searchQuery || categoryFilter) && (
+          <p className='no-results'>Không tìm thấy sản phẩm phù hợp.</p>
+        )}
         <div id='product_list' className='product-grid'>
           {paginatedProducts.map((product) => (
             <div key={product.id} className='product-item'>
               <Link to={`/product/${product.id}`}>
-                <img src={`/images/${product.id}/thumbnail.png`} alt={product.name} loading='lazy' />
+                <img
+                  src={`/images/${product.id}/thumbnail.png`}
+                  alt={product.name}
+                  loading='lazy'
+                />
                 <h4>{product.name}</h4>
               </Link>
               <p>{product.price} VNĐ</p>
             </div>
           ))}
         </div>
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </div>
   );

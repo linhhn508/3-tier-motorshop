@@ -4,12 +4,16 @@ import Pagination from '../Pagination';
 
 describe('Pagination', () => {
   it('returns null when totalPages is 1', () => {
-    const { container } = render(<Pagination currentPage={1} totalPages={1} onPageChange={() => {}} />);
+    const { container } = render(
+      <Pagination currentPage={1} totalPages={1} onPageChange={() => {}} />
+    );
     expect(container.innerHTML).toBe('');
   });
 
   it('returns null when totalPages is 0', () => {
-    const { container } = render(<Pagination currentPage={1} totalPages={0} onPageChange={() => {}} />);
+    const { container } = render(
+      <Pagination currentPage={1} totalPages={0} onPageChange={() => {}} />
+    );
     expect(container.innerHTML).toBe('');
   });
 

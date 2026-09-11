@@ -212,7 +212,12 @@ function ContactPage() {
 
             <div className='form-group'>
               <label htmlFor='contact-subject'>Chủ đề</label>
-              <select id='contact-subject' name='subject' value={formData.subject} onChange={handleChange}>
+              <select
+                id='contact-subject'
+                name='subject'
+                value={formData.subject}
+                onChange={handleChange}
+              >
                 <option value=''>-- Chọn chủ đề --</option>
                 <option value='product'>Tư vấn sản phẩm</option>
                 <option value='order'>Đặt hàng / Giao hàng</option>

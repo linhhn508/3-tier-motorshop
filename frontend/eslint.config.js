@@ -32,7 +32,7 @@ export default [
         'error',
         {
           singleQuote: true,
-          printWidth: 140,
+          printWidth: 100,
           tabWidth: 2,
           semi: true,
           trailingComma: 'es5',

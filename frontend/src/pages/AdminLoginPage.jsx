@@ -41,11 +41,23 @@ function AdminLoginPage() {
       <form onSubmit={handleSubmit} noValidate>
         <div className='form-group'>
           <label htmlFor='admin-user'>Username</label>
-          <input type='text' id='admin-user' value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <input
+            type='text'
+            id='admin-user'
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
         </div>
         <div className='form-group'>
           <label htmlFor='admin-pass'>Password</label>
-          <input type='password' id='admin-pass' value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input
+            type='password'
+            id='admin-pass'
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         {error && (
           <div className='form-status error' role='alert'>

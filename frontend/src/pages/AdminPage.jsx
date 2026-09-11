@@ -186,44 +186,108 @@ function ProductsTab({ authFetch }) {
           <div className='admin-form-grid'>
             <div className='form-group'>
               <label htmlFor='prod-id'>ID (slug) *</label>
-              <input type='text' id='prod-id' name='id' value={formData.id} onChange={handleChange} disabled={!!editingId} required />
+              <input
+                type='text'
+                id='prod-id'
+                name='id'
+                value={formData.id}
+                onChange={handleChange}
+                disabled={!!editingId}
+                required
+              />
             </div>
             <div className='form-group'>
               <label htmlFor='prod-name'>Tên sản phẩm *</label>
-              <input type='text' id='prod-name' name='name' value={formData.name} onChange={handleChange} required />
+              <input
+                type='text'
+                id='prod-name'
+                name='name'
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className='form-group'>
               <label htmlFor='prod-price'>Giá (VNĐ) *</label>
-              <input type='number' id='prod-price' name='price' value={formData.price} onChange={handleChange} required />
+              <input
+                type='number'
+                id='prod-price'
+                name='price'
+                value={formData.price}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className='form-group'>
               <label htmlFor='prod-category'>Danh mục *</label>
-              <input type='text' id='prod-category' name='category' value={formData.category} onChange={handleChange} required />
+              <input
+                type='text'
+                id='prod-category'
+                name='category'
+                value={formData.category}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className='form-group'>
               <label htmlFor='prod-brand'>Hãng</label>
-              <input type='text' id='prod-brand' name='brand' value={formData.brand} onChange={handleChange} />
+              <input
+                type='text'
+                id='prod-brand'
+                name='brand'
+                value={formData.brand}
+                onChange={handleChange}
+              />
             </div>
             <div className='form-group'>
               <label htmlFor='prod-origin'>Xuất xứ</label>
-              <input type='text' id='prod-origin' name='made_in' value={formData.made_in} onChange={handleChange} />
+              <input
+                type='text'
+                id='prod-origin'
+                name='made_in'
+                value={formData.made_in}
+                onChange={handleChange}
+              />
             </div>
             <div className='form-group'>
               <label htmlFor='prod-material'>Chất liệu</label>
-              <input type='text' id='prod-material' name='material' value={formData.material} onChange={handleChange} />
+              <input
+                type='text'
+                id='prod-material'
+                name='material'
+                value={formData.material}
+                onChange={handleChange}
+              />
             </div>
             <div className='form-group'>
               <label htmlFor='prod-color'>Màu sắc</label>
-              <input type='text' id='prod-color' name='color' value={formData.color} onChange={handleChange} />
+              <input
+                type='text'
+                id='prod-color'
+                name='color'
+                value={formData.color}
+                onChange={handleChange}
+              />
             </div>
           </div>
           <div className='form-group'>
             <label htmlFor='prod-detail'>Mô tả chi tiết</label>
-            <textarea id='prod-detail' name='detail' rows='3' value={formData.detail} onChange={handleChange}></textarea>
+            <textarea
+              id='prod-detail'
+              name='detail'
+              rows='3'
+              value={formData.detail}
+              onChange={handleChange}
+            ></textarea>
           </div>
           <div className='form-group'>
             <label htmlFor='prod-image'>Ảnh sản phẩm</label>
-            <input type='file' id='prod-image' accept='image/*' onChange={(e) => setImageFile(e.target.files[0])} />
+            <input
+              type='file'
+              id='prod-image'
+              accept='image/*'
+              onChange={(e) => setImageFile(e.target.files[0])}
+            />
           </div>
           <div className='admin-form-actions'>
             <button type='submit' className='admin-btn admin-btn-primary'>
@@ -250,7 +314,10 @@ function ProductsTab({ authFetch }) {
           <tbody>
             {products.length === 0 ? (
               <tr>
-                <td colSpan='5' style={{ textAlign: 'center', color: 'var(--color-muted-foreground)' }}>
+                <td
+                  colSpan='5'
+                  style={{ textAlign: 'center', color: 'var(--color-muted-foreground)' }}
+                >
                   Chưa có sản phẩm nào.
                 </td>
               </tr>
@@ -262,10 +329,16 @@ function ProductsTab({ authFetch }) {
                   <td>{p.price} VNĐ</td>
                   <td>{p.category}</td>
                   <td className='admin-cell-actions'>
-                    <button className='admin-btn admin-btn-sm admin-btn-edit' onClick={() => handleEdit(p.id)}>
+                    <button
+                      className='admin-btn admin-btn-sm admin-btn-edit'
+                      onClick={() => handleEdit(p.id)}
+                    >
                       Sửa
                     </button>
-                    <button className='admin-btn admin-btn-sm admin-btn-delete' onClick={() => handleDelete(p.id)}>
+                    <button
+                      className='admin-btn admin-btn-sm admin-btn-delete'
+                      onClick={() => handleDelete(p.id)}
+                    >
                       Xóa
                     </button>
                   </td>
@@ -305,7 +378,10 @@ function ContactsTab({ authFetch }) {
           <tbody>
             {contacts.length === 0 ? (
               <tr>
-                <td colSpan='5' style={{ textAlign: 'center', color: 'var(--color-muted-foreground)' }}>
+                <td
+                  colSpan='5'
+                  style={{ textAlign: 'center', color: 'var(--color-muted-foreground)' }}
+                >
                   Chưa có liên hệ nào.
                 </td>
               </tr>
@@ -354,7 +430,10 @@ function FeedbackTab({ authFetch }) {
           <tbody>
             {feedback.length === 0 ? (
               <tr>
-                <td colSpan='4' style={{ textAlign: 'center', color: 'var(--color-muted-foreground)' }}>
+                <td
+                  colSpan='4'
+                  style={{ textAlign: 'center', color: 'var(--color-muted-foreground)' }}
+                >
                   Chưa có phản hồi nào.
                 </td>
               </tr>
