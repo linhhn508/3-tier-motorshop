@@ -3,7 +3,7 @@ from flask import current_app, jsonify, request
 
 from app.middleware import token_required
 from app.upload import bp
-
+from app.upload import logger
 
 def get_s3_client():
     return boto3.client(
@@ -17,8 +17,10 @@ def get_s3_client():
 @bp.route("/presign", methods=["GET"])
 @token_required
 def presign():
+    logger.debug("Generating presigned URL for S3 upload.")
     filename = request.args.get("filename")
     if not filename:
+        logger.error("filename parameter is required.")
         return jsonify({"error": "filename parameter is required"}), 400
 
     client = get_s3_client()
@@ -27,4 +29,5 @@ def presign():
         Params={"Bucket": "product-image", "Key": filename},
         ExpiresIn=300,
     )
+    logger.debug(f"Presigned URL generated for filename: {filename}")
     return jsonify({"url": url})

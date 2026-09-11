@@ -4,11 +4,12 @@ from app import db
 from app.feedback import bp
 from app.middleware import token_required
 from app.models import Feedback, Product
-
+from app.products import logger
 
 @bp.route("", methods=["GET"])
 @token_required
 def list_all_feedback():
+    logger.debug("Listing all feedback.")
     feedbacks = Feedback.query.order_by(Feedback.created_at.desc()).all()
     return jsonify([{
         "id": f.id,
@@ -21,7 +22,9 @@ def list_all_feedback():
 
 @bp.route("/<product_id>", methods=["GET"])
 def get_feedback(product_id):
+    logger.debug(f"Retrieving feedback for product_id: {product_id}")
     if not db.session.get(Product, product_id):
+        logger.error(f"Product with id {product_id} not found.")
         return jsonify({"error": "Product not found"}), 404
 
     feedbacks = (
@@ -38,20 +41,25 @@ def get_feedback(product_id):
 
 @bp.route("", methods=["POST"])
 def submit_feedback():
+    logger.debug("Feedback submission received.")
     data = request.get_json()
     if not data:
+        logger.error("No JSON data provided in the request body.")
         return jsonify({"error": "Request body is required"}), 400
 
     required = ["name", "rating", "comment"]
     missing = [f for f in required if f not in data]
     if missing:
+        logger.error(f"Missing fields: {', '.join(missing)}")
         return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
     if not isinstance(data["rating"], int) or not (1 <= data["rating"] <= 5):
+        logger.error("Invalid rating provided.")
         return jsonify({"error": "Rating must be an integer between 1 and 5"}), 400
 
     product_id = data.get("product_id")
     if product_id and not db.session.get(Product, product_id):
+        logger.error(f"Product with id {product_id} not found.")
         return jsonify({"error": "Product not found"}), 404
 
     feedback = Feedback(
