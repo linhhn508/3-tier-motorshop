@@ -53,7 +53,7 @@ def setup_logging(app, log_level="INFO", log_to_file=False, log_dir='./logs'):
 
         duration = (time.time() - request.start_time) * 1000
         app.logger.info(
-            f"IP: {request.remote_addr} | "
+            f"IP: {request.headers.get('X-Forwarded-For')} | "
             f"{request.method} {request.path} | "
             f"Status: {response.status_code} | Time: {duration:.2f}ms"
         )
