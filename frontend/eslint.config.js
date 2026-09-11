@@ -27,32 +27,35 @@ export default [
     },
     rules: {
       'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
       'prettier/prettier': [
-        'error', 
-        { 
+        'error',
+        {
           singleQuote: true,
           printWidth: 100,
           tabWidth: 2,
           semi: true,
           trailingComma: 'es5',
           bracketSpacing: true,
-          endOfLine: 'lf'
-        }],
+          endOfLine: 'lf',
+        },
+      ],
     },
   },
-    {
-      files: ['**/*.{test,spec}.{js,jsx}', 'tests/**/*.{js,jsx}'],
-      languageOptions: {
-        globals: {
-          beforeAll: 'readonly',
-          beforeEach: 'readonly',
-          afterAll: 'readonly',
-          afterEach: 'readonly',
-          describe: 'readonly',
-          expect: 'readonly',
-          it: 'readonly',
-          test: 'readonly',
-        },
+  {
+    files: ['**/*.{test,spec}.{js,jsx}', 'tests/**/*.{js,jsx}'],
+    languageOptions: {
+      globals: {
+        vi: 'readonly',
+        beforeAll: 'readonly',
+        beforeEach: 'readonly',
+        afterAll: 'readonly',
+        afterEach: 'readonly',
+        describe: 'readonly',
+        expect: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
       },
     },
+  },
 ];

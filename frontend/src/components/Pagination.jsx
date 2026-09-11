@@ -1,19 +1,19 @@
 function Pagination({ currentPage, totalPages, onPageChange }) {
-  if (totalPages <= 1) return null
+  if (totalPages <= 1) return null;
 
   return (
-    <nav aria-label="Page navigation">
-      <ul className="pagination">
+    <nav aria-label='Page navigation'>
+      <ul className='pagination'>
         <li>
           <button
-            id="prev-btn"
+            id='prev-btn'
             disabled={currentPage === 1}
             onClick={() => onPageChange(currentPage - 1)}
           >
             &laquo; Previous
           </button>
         </li>
-        <li id="page-numbers">
+        <li id='page-numbers'>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
@@ -26,7 +26,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         </li>
         <li>
           <button
-            id="next-btn"
+            id='next-btn'
             disabled={currentPage === totalPages}
             onClick={() => onPageChange(currentPage + 1)}
           >
@@ -35,7 +35,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         </li>
       </ul>
     </nav>
-  )
+  );
 }
 
-export default Pagination
+export default Pagination;

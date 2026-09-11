@@ -1,71 +1,74 @@
-import { useState, useEffect, useMemo } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import CategoryMenu from '../components/CategoryMenu'
-import Pagination from '../components/Pagination'
+import { useState, useEffect, useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import CategoryMenu from '../components/CategoryMenu';
+import Pagination from '../components/Pagination';
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 10;
 
 function HomePage() {
-  const [products, setProducts] = useState([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [searchParams] = useSearchParams()
+  const [products, setProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams] = useSearchParams();
 
-  const searchQuery = searchParams.get('q') || ''
-  const categoryFilter = searchParams.get('category') || ''
+  const searchQuery = searchParams.get('q') || '';
+  const categoryFilter = searchParams.get('category') || '';
 
   useEffect(() => {
     const url = searchQuery
       ? `/api/products/search?q=${encodeURIComponent(searchQuery)}`
-      : '/api/products/'
+      : '/api/products/';
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentPage(1);
     fetch(url)
       .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`)
-        return res.json()
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
       })
       .then(setProducts)
-      .catch((err) => console.error('Error loading products:', err))
-  }, [searchQuery])
+      .catch((err) => console.error('Error loading products:', err));
+  }, [searchQuery]);
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when category changes
   useEffect(() => {
-    setCurrentPage(1)
-  }, [searchQuery, categoryFilter])
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentPage(1);
+  }, [categoryFilter]);
 
   const filteredProducts = useMemo(() => {
-    let result = products
+    let result = products;
     if (categoryFilter) {
-      result = result.filter((p) => p.category === categoryFilter)
+      result = result.filter((p) => p.category === categoryFilter);
     }
-    return result
-  }, [products, searchQuery, categoryFilter])
+    return result;
+  }, [products, categoryFilter]);
 
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE)
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const heading = searchQuery
     ? `Kết quả tìm kiếm: "${searchQuery}"`
     : categoryFilter
       ? categoryFilter
-      : 'SẢN PHẨM MỚI NHẤT'
+      : 'SẢN PHẨM MỚI NHẤT';
 
   return (
-    <div className="container">
+    <div className='container'>
       <CategoryMenu />
-      <div className="content">
+      <div className='content'>
         <h3>{heading}</h3>
         {filteredProducts.length === 0 && (searchQuery || categoryFilter) && (
-          <p className="no-results">Không tìm thấy sản phẩm phù hợp.</p>
+          <p className='no-results'>Không tìm thấy sản phẩm phù hợp.</p>
         )}
-        <div id="product_list" className="product-grid">
+        <div id='product_list' className='product-grid'>
           {paginatedProducts.map((product) => (
-            <div key={product.id} className="product-item">
+            <div key={product.id} className='product-item'>
               <Link to={`/product/${product.id}`}>
                 <img
                   src={`/images/${product.id}/thumbnail.png`}
                   alt={product.name}
-                  loading="lazy"
+                  loading='lazy'
                 />
                 <h4>{product.name}</h4>
               </Link>
@@ -80,7 +83,7 @@ function HomePage() {
         />
       </div>
     </div>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;
